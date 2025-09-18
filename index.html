@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Anbuvel Raja — Portfolio</title>
+  <meta name="description" content="Anbuvel Raja — Freelance Developer, CSE Student (1st Year)" />
+  <!-- Three.js + GSAP -->
+  <script src="https://unpkg.com/three@0.158.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/gsap@3.12.2/dist/gsap.min.js"></script>
+  <script src="https://unpkg.com/gsap@3.12.2/dist/ScrollTrigger.min.js"></script>
+
+  <style>
+    :root{
+      --bg1:#05040a;
+      --bg2:#0d1220;
+      --accent:#00d7ff; /* cyan accent (VFX-ish) */
+      --accent-2:#a54bff; /* purple highlight */
+      --muted:rgba(255,255,255,0.7);
+      --card: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1) 0%, var(--bg2) 100%);color:#fff;font-family:Inter,system-ui,Segoe UI,Roboto,Arial; -webkit-font-smoothing:antialiased;}
+    a{color:inherit;text-decoration:none}
+    button{font:inherit}
+
+    /* canvas hero */
+    #hero{position:relative;height:100vh;min-height:620px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;display:block}
+
+    /* content */
+    .container{position:relative;z-index:2;width:100%;max-width:1160px;padding:48px;display:flex;gap:36px;align-items:center}
+    .left{flex:1;min-width:280px}
+    .title{
+      font-weight:900;
+      font-size:clamp(44px,10vw,112px);
+      line-height:0.9;
+      letter-spacing:0.02em;
+      text-transform:uppercase;
+      margin:0;
+      display:inline-block;
+      filter:drop-shadow(0 20px 40px rgba(0,215,255,0.07));
+    }
+    .title .accent { background: linear-gradient(90deg,var(--accent),var(--accent-2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .sub {margin-top:12px;color:var(--muted);font-size:18px}
+    .lead {margin-top:18px;color:rgba(255,255,255,0.75);max-width:70ch;font-size:15px;line-height:1.6}
+    .cta {margin-top:20px;display:flex;gap:12px;align-items:center}
+    .btn {
+      background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:10px;cursor:pointer;color:#fff
+    }
+    .btn.primary {background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#07101a;border:none;box-shadow:0 8px 30px rgba(165,75,255,0.12)}
+    .small-note{margin-top:12px;color:var(--muted);font-size:13px}
+
+    /* right card */
+    .right{width:340px;min-width:220px}
+    .card{background:var(--card);padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(6px);box-shadow:0 10px 30px rgba(0,0,0,0.6)}
+    .meta{color:var(--muted);font-size:13px;margin-bottom:8px}
+    .name{font-weight:700;font-size:18px}
+    .contact{margin-top:8px;color:var(--muted);font-size:14px}
+    .skills-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .pill{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:600;font-size:14px}
+    .pill .logo{width:36px;height:36px;border-radius:8px;background:#fff;color:#000;display:grid;place-items:center;font-weight:700}
+
+    /* sections */
+    section{padding:88px 20px}
+    .wrap{max-width:1100px;margin:0 auto}
+    h2{font-size:28px;margin:0 0 18px}
+    p.muted{color:var(--muted)}
+    .about-grid{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .experience{background:linear-gradient(90deg, rgba(0,215,255,0.03), transparent);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);color:var(--muted)}
+
+    /* projects placeholder */
+    .projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:12px}
+    .project{padding:18px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);min-height:120px}
+
+    /* contact form */
+    form{display:flex;flex-direction:column;gap:12px;max-width:680px}
+    input,textarea{padding:12px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff}
+    input::placeholder, textarea::placeholder{color:rgba(255,255,255,0.45)}
+    .footer{padding:36px 20px;text-align:center;color:var(--muted)}
+
+    /* responsive */
+    @media (max-width:980px){
+      .container{flex-direction:column;align-items:flex-start}
+      .right{width:100%}
+      .about-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <!-- HERO -->
+    <header id="hero" aria-label="Hero">
+      <canvas id="bg"></canvas>
+
+      <div class="container">
+        <div class="left">
+          <h1 class="title"><span class="accent">Anbuvel Raja</span></h1>
+          <div class="sub">Freelance Developer & Designer • CSE Student (1st Year)</div>
+          <div class="lead">I build creative web experiences with motion and immersive visuals. I freelance on landing pages, animated UI, and performance-first interactions — open for projects and collaborations.</div>
+
+          <div class="cta">
+            <button class="btn primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Hire me</button>
+            <button class="btn" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">About</button>
+          </div>
+
+          <div class="small-note">Available for freelance — rate & timeline on request.</div>
+        </div>
+
+        <aside class="right">
+          <div class="card">
+            <div class="meta">Contact</div>
+            <div class="name">Anbuvel Raja</div>
+            <div class="contact">📧 <strong>anbuvelraja@gmail.com</strong></div>
+            <div class="contact">📱 <strong>8220202571</strong></div>
+
+            <div class="meta" style="margin-top:14px">Skills</div>
+            <div class="skills-row">
+              <div class="pill"><div class="logo">Py</div> Python</div>
+              <div class="pill"><div class="logo">JS</div> JavaScript</div>
+              <div class="pill"><div class="logo">HTML</div> HTML</div>
+              <div class="pill"><div class="logo">CSS</div> CSS</div>
+            </div>
+
+            <div style="margin-top:14px" class="meta">Freelance</div>
+            <div style="color:var(--muted);font-size:14px">Built landing pages, micro-interactions, & animated frontends for clients. Focus on performance and delightful motion.</div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="wrap">
+        <h2>About Me</h2>
+        <div class="about-grid">
+          <div>
+            <p class="muted">I'm <strong>Anbuvel Raja</strong>, a first-year Computer Science student who loves programming and creative UI. I combine front-end skills with motion design to create memorable experiences.</p>
+            <p class="muted">Learning full-stack fundamentals while working on freelance projects. I enjoy solving problems with code and making interfaces that feel alive.</p>
+          </div>
+
+          <div>
+            <div class="experience">
+              <div style="font-weight:700">Freelance Experience</div>
+              <div style="margin-top:8px">• Delivered responsive landing pages and animated components.<br>• Worked directly with clients to implement briefs and iterate fast.<br>• Focused on smooth UX and optimized performance.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills">
+      <div class="wrap">
+        <h2>Skills</h2>
+        <p class="muted">Languages & tools I use</p>
+
+        <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;">
+          <div class="pill"><div class="logo">Py</div> Python</div>
+          <div class="pill"><div class="logo">JS</div> JavaScript</div>
+          <div class="pill"><div class="logo">HTML</div> HTML</div>
+          <div class="pill"><div class="logo">CSS</div> CSS</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects">
+      <div class="wrap">
+        <h2>Projects</h2>
+        <p class="muted">No projects shown.</p>
+
+        <div class="projects-grid" aria-hidden="true">
+          <!-- placeholders for future projects -->
+          <div class="project">Project placeholder</div>
+          <div class="project">Project placeholder</div>
+          <div class="project">Project placeholder</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+      <div class="wrap">
+        <h2>Contact</h2>
+        <p class="muted">Want to collaborate or hire me? Reach out — email or phone below or send a quick message.</p>
+
+        <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;margin-top:18px">
+          <div style="min-width:260px">
+            <div style="font-weight:700">Email</div>
+            <div class="muted">anbuvelraja@gmail.com</div>
+            <div style="height:14px"></div>
+            <div style="font-weight:700">Phone</div>
+            <div class="muted">8220202571</div>
+          </div>
+
+          <form onsubmit="event.preventDefault(); alert('Thanks — message sent (demo).')">
+            <input placeholder="Your name" required />
+            <input placeholder="Your email or phone" required />
+            <textarea placeholder="Message" rows="4" required></textarea>
+            <div style="display:flex;gap:10px;margin-top:8px">
+              <button class="btn primary" type="submit">Send message</button>
+              <button class="btn" type="button" onclick="window.location.href='mailto:anbuvelraja@gmail.com'">Email</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">© <span id="year"></span> Anbuvel Raja</footer>
+  </main>
+
+  <!-- Three.js scene + particles + VFX-ish glowing 3D object -->
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Renderer & scene
+    const canvas = document.getElementById('bg');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const scene = new THREE.Scene();
+
+    // Camera
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 0, 18);
+
+    // Lights
+    const amb = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(amb);
+    const point = new THREE.PointLight(0x00d7ff, 1.2, 80);
+    point.position.set(8, 8, 10);
+    scene.add(point);
+    const point2 = new THREE.PointLight(0xa54bff, 0.8, 80);
+    point2.position.set(-8, -6, 10);
+    scene.add(point2);
+
+    // Subtle fog for depth
+    scene.fog = new THREE.FogExp2(0x03030b, 0.007);
+
+    // PARTICLES
+    const particleCount = 1400;
+    const pos = new Float32Array(particleCount * 3);
+    const col = new Float32Array(particleCount * 3);
+    for(let i=0;i<particleCount;i++){
+      const r = (Math.random() - 0.5) * 60;
+      pos[i*3] = (Math.random() - 0.5) * 50;
+      pos[i*3+1] = (Math.random() - 0.5) * 30;
+      pos[i*3+2] = (Math.random() - 0.5) * 40;
+      // color gradient between cyan and purple
+      const t = Math.random();
+      col[i*3] = 0.0 + t*0.0 + 0.0; // R kept small
+      col[i*3+1] = 0.85 * (1 - t) + 0.3 * t; // G
+      col[i*3+2] = 1.0 * t + 0.7 * (1 - t); // B
+    }
+    const pg = new THREE.BufferGeometry();
+    pg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    pg.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    const pm = new THREE.PointsMaterial({ size: 0.06, vertexColors: true, transparent: true, opacity: 0.9 });
+    const points = new THREE.Points(pg, pm);
+    scene.add(points);
+
+    // 3D object: stylized icosahedron with emissive material to look like shiny VFX object
+    const geom = new THREE.IcosahedronGeometry(3.6, 2); // more subdivisions for smoother shape
+    const mat = new THREE.MeshStandardMaterial({
+      color: 0x111217,
+      metalness: 0.9,
+      roughness: 0.12,
+      emissive: 0x002f3f,
+      emissiveIntensity: 0.8,
+      flatShading: false
+    });
+    const core = new THREE.Mesh(geom, mat);
+    core.position.set(10, 0, 0);
+    scene.add(core);
+
+    // add an inner emissive layer (slightly smaller) to simulate glow
+    const innerMat = new THREE.MeshBasicMaterial({
+      color: 0x00d7ff,
+      transparent: true,
+      opacity: 0.12,
+      blending: THREE.AdditiveBlending
+    });
+    const inner = new THREE.Mesh(new THREE.IcosahedronGeometry(3.0, 2), innerMat);
+    inner.position.copy(core.position);
+    scene.add(inner);
+
+    // orbiting wireframe halo
+    const ringGeom = new THREE.RingGeometry(4.6, 5.2, 64);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xa54bff, side: THREE.DoubleSide, transparent:true, opacity:0.045 });
+    const ring = new THREE.Mesh(ringGeom, ringMat);
+    ring.rotation.x = Math.PI * 0.4;
+    ring.position.copy(core.position);
+    scene.add(ring);
+
+    // subtle model rotation offsets
+    const mouse = {x:0,y:0};
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = (e.clientX/window.innerWidth) - 0.5;
+      mouse.y = (e.clientY/window.innerHeight) - 0.5;
+    }, {passive:true});
+
+    function onResize(){
+      const w = window.innerWidth, h = window.innerHeight;
+      renderer.setSize(w,h);
+      camera.aspect = w/h;
+      camera.updateProjectionMatrix();
+    }
+    window.addEventListener('resize', onResize, {passive:true});
+    onResize();
+
+    // animation loop using GSAP ticker
+    gsap.ticker.add(() => {
+      // particles slow rotate and subtle z movement
+      points.rotation.y += 0.0008;
+      points.rotation.x += 0.00015;
+      // core rotation and little bob
+      core.rotation.y += 0.004 + mouse.x * 0.002;
+      core.rotation.x += 0.002 + mouse.y * 0.001;
+      inner.rotation.y += 0.005;
+      inner.position.z = core.position.z + Math.sin(Date.now() * 0.001) * 0.06;
+
+      // ring slowly rotate
+      ring.rotation.z += 0.0012;
+
+      // camera parallax
+      camera.position.x += (mouse.x * 6 - camera.position.x) * 0.06;
+      camera.position.y += (-mouse.y * 3 - camera.position.y) * 0.06;
+
+      renderer.render(scene, camera);
+    });
+
+    // GSAP scroll animations for DOM
+    gsap.utils.toArray('section').forEach((sec) => {
+      gsap.from(sec.querySelectorAll('h2, p, .pill, .project, .experience'), {
+        autoAlpha: 0, y: 36, stagger: 0.06, duration: 0.8, ease: 'power3.out',
+        scrollTrigger: { trigger: sec, start: 'top 80%' }
+      });
+    });
+
+    // smooth anchor scrolling for internal links
+    document.querySelectorAll('a[href^="#"], button[data-scroll]').forEach(el=>{
+      el.addEventListener('click', (e)=>{
+        const target = el.getAttribute('href') || el.dataset.target;
+        if(!target) return;
+        e.preventDefault();
+        const elTarget = document.querySelector(target);
+        if(elTarget) elTarget.scrollIntoView({behavior:'smooth'});
+      });
+    });
+
+    // small hover effect for skill pill -> scale simulated "hud" effect on core
+    document.querySelectorAll('.pill').forEach((p, i) => {
+      p.addEventListener('mouseenter', () => {
+        gsap.to(core.scale, { x:1.06, y:1.06, z:1.06, duration:0.25 });
+        gsap.to(inner.material, { opacity: 0.22, duration:0.25 });
+      });
+      p.addEventListener('mouseleave', () => {
+        gsap.to(core.scale, { x:1, y:1, z:1, duration:0.35 });
+        gsap.to(inner.material, { opacity: 0.12, duration:0.35 });
+      });
+    });
+
+    // camera zoom on scroll
+    window.addEventListener('scroll', () => {
+      const t = window.scrollY / window.innerHeight;
+      camera.position.z = 18 - Math.min(6, t * 6);
+    }, {passive:true});
+
+  </script>
+</body>
+</html>
